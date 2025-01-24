@@ -12,3 +12,16 @@
   margin: 10px;
   cursor: pointer;
 }
+
+.inputItem {
+  border: none;
+  width: 400px;
+}
+
+.checkboxTitleContainer {
+  display: flex;
+}
+
+.titleChecked {
+  text-decoration: line-through;
+}

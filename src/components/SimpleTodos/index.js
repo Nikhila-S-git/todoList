@@ -39,9 +39,16 @@ const initialTodosList = [
   },
 ]
 
+const newTodosList = initialTodosList.map(each => ({
+  ...each,
+  isChecked: false,
+}))
+
 class SimpleTodos extends Component {
   state = {
-    todoList: initialTodosList,
+    todoList: newTodosList,
+    title: '',
+    editId: 0,
   }
 
   deleteItem = id => {
@@ -50,21 +57,69 @@ class SimpleTodos extends Component {
     this.setState({todoList: filteredList})
   }
 
+  onClickAdd = () => {
+    const {todoList, title} = this.state
+    const inputTodo = title.split(' ')
+    if (inputTodo.length > 1) {
+      const n = parseInt(inputTodo[1])
+      for (let i = 0; i < n; i++) {
+        const newId = newTodosList[newTodosList.length - 1].id + 1
+        const newTodo = {id: newId, title}
+        todoList.push(newTodo)
+      }
+    } else {
+      const newId = newTodosList[newTodosList.length - 1].id + 1
+      const newTodo = {id: newId, title}
+      todoList.push(newTodo)
+    }
+    this.setState({todoList, title: ''})
+  }
+
+  toggleBtn = id => {
+    this.setState(prevState => ({editId: prevState.editId === id ? null : id}))
+  }
+
+  onChangeInput = event => {
+    this.setState({title: event.target.value})
+  }
+
+  toggleCheck = id => {
+    this.setState(prevState => ({
+      todoList: prevState.todoList.map(each =>
+        each.id === id ? {...each, isChecked: !each.isChecked} : each,
+      ),
+    }))
+  }
+
   render() {
-    const {todoList} = this.state
+    const {todoList, title, editId} = this.state
     return (
       <div className="bg-container">
         <div className="card-container">
           <h1 className="heading">Simple Todos</h1>
-          <u1>
+          <div className="inputContainer">
+            <input
+              type="text"
+              className="inputElement"
+              onChange={this.onChangeInput}
+              value={title}
+            />
+            <button type="button" className="addBtn" onClick={this.onClickAdd}>
+              Add
+            </button>
+          </div>
+          <ul>
             {todoList.map(eachItem => (
               <TodoItem
                 todoItem={eachItem}
                 key={eachItem.id}
                 deleteItem={this.deleteItem}
+                toggleBtn={this.toggleBtn}
+                btnValue={editId === eachItem.id ? 'Save' : 'Edit'}
+                toggleCheck={this.toggleCheck}
               />
             ))}
-          </u1>
+          </ul>
         </div>
       </div>
     )
