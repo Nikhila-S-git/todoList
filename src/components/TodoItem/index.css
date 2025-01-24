@@ -1,0 +1,14 @@
+/* Write your CSS here */
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button {
+  background-color: transparent;
+  border: solid #ff0b37 3px;
+  color: #ff0b37;
+  margin: 10px;
+  cursor: pointer;
+}
