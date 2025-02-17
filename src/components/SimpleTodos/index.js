@@ -49,6 +49,7 @@ class SimpleTodos extends Component {
     todoList: newTodosList,
     title: '',
     editId: 0,
+    todoTitle: '',
   }
 
   deleteItem = id => {
@@ -59,9 +60,16 @@ class SimpleTodos extends Component {
 
   onClickAdd = () => {
     const {todoList, title} = this.state
-    const inputTodo = title.split(' ')
-    if (inputTodo.length > 1) {
-      const n = parseInt(inputTodo[1])
+    let number = ''
+    for (let i = 0; i < title.length; i++) {
+      const char = title[i]
+      if (char >= '0' && char <= '9') {
+        number += char
+      }
+    }
+    // Convert the number string to an integer, if there's any number
+    const n = number ? Number(number) : null
+    if (n) {
       for (let i = 0; i < n; i++) {
         const newId = newTodosList[newTodosList.length - 1].id + 1
         const newTodo = {id: newId, title}
@@ -76,11 +84,18 @@ class SimpleTodos extends Component {
   }
 
   toggleBtn = id => {
-    this.setState(prevState => ({editId: prevState.editId === id ? null : id}))
+    this.setState(prevState => {
+      // Toggle editId and update the todoTitle when editing
+      const newEditId = prevState.editId === id ? null : id
+      const todoTitle = newEditId
+        ? prevState.todoList.find(item => item.id === id).title
+        : ''
+      return {editId: newEditId, todoTitle}
+    })
   }
 
   onChangeInput = event => {
-    this.setState({title: event.target.value})
+    this.setState({todoTitle: event.target.value, title: event.target.value})
   }
 
   toggleCheck = id => {
@@ -91,8 +106,23 @@ class SimpleTodos extends Component {
     }))
   }
 
+  editTodo = value => {
+    const {title} = this.state
+    this.setState({todoTitle: value})
+  }
+
+  updateTodo = (id, updatedTitle) => {
+    console.log(updatedTitle)
+    this.setState(prevState => ({
+      todoList: prevState.todoList.map(todo =>
+        todo.id === id ? {...todo, title: updatedTitle} : todo,
+      ),
+    }))
+  }
+
   render() {
-    const {todoList, title, editId} = this.state
+    const {todoList, title, editId, todoTitle} = this.state
+    console.log(todoList)
     return (
       <div className="bg-container">
         <div className="card-container">
@@ -117,6 +147,9 @@ class SimpleTodos extends Component {
                 toggleBtn={this.toggleBtn}
                 btnValue={editId === eachItem.id ? 'Save' : 'Edit'}
                 toggleCheck={this.toggleCheck}
+                editTodo={this.editTodo}
+                updateTodo={this.updateTodo}
+                todoTitle={todoTitle}
               />
             ))}
           </ul>

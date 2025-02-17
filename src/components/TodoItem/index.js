@@ -1,40 +1,70 @@
+import {Component} from 'react'
 import './index.css'
 
-const TodoItem = props => {
-  const {todoItem, deleteItem, toggleBtn, btnValue, toggleCheck} = props
-  const {title, id, isChecked} = todoItem
-  const onDelete = () => {
-    deleteItem(id)
+class TodoItem extends Component {
+  state = {editedTitle: this.props.todoItem.title}
+
+  onDelete = () => {
+    const {deleteItem, todoItem} = this.props
+    deleteItem(todoItem.id)
   }
 
-  const onToggle = () => {
-    toggleBtn(id)
+  onToggle = () => {
+    const {toggleBtn, todoItem} = this.props
+    toggleBtn(todoItem.id)
   }
 
-  const onChangeChecked = () => {
-    toggleCheck(id)
+  onChangeChecked = () => {
+    const {toggleCheck, todoItem} = this.props
+    toggleCheck(todoItem.id)
   }
 
-  return (
-    <li className="todo-item">
-      <label className="checkboxTitleContainer">
-        <input type="checkbox" onChange={onChangeChecked} />
-        {btnValue === 'Save' ? (
-          <input type="text" value={title} className="inputItem" />
-        ) : (
-          <p className={isChecked ? 'titleChecked' : ''}>{title}</p>
-        )}
-      </label>
-      <div>
-        <button className="button" onClick={onToggle} type="button">
-          {btnValue}
-        </button>
-        <button className="button" onClick={onDelete} type="button">
-          Delete
-        </button>
-      </div>
-    </li>
-  )
+  onEditTodo = event => {
+    const {editTodo} = this.props
+    this.setState({editedTitle: event.target.value})
+    editTodo(event.target.value)
+  }
+
+  onSaveTodo = () => {
+    const {updateTodo, todoItem} = this.props
+    const {editedTitle} = this.state
+    updateTodo(todoItem.id, editedTitle)
+    this.onToggle()
+  }
+
+  render() {
+    const {todoItem, btnValue, todoTitle} = this.props
+    const {title, isChecked} = todoItem
+    return (
+      <li className="todo-item">
+        <label className="checkboxTitleContainer">
+          <input type="checkbox" onChange={this.onChangeChecked} />
+          {btnValue === 'Save' ? (
+            <input
+              type="text"
+              value={todoTitle}
+              className="inputItem"
+              onChange={this.onEditTodo}
+            />
+          ) : (
+            <p className={isChecked ? 'titleChecked' : ''}>{title}</p>
+          )}
+        </label>
+        <div>
+          <button
+            className="button"
+            onClick={btnValue === 'Save' ? this.onSaveTodo : this.onToggle}
+            type="button"
+          >
+            {btnValue}
+          </button>
+          <button className="button" onClick={this.onDelete} type="button">
+            Delete
+          </button>
+        </div>
+      </li>
+    )
+  }
 }
 
 export default TodoItem
